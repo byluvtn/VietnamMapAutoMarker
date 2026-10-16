@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Bản Đồ Ứng Viên Việt Nam</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f0f2f5;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      text-align: center;
+      color: #1a3c6e;
+    }
+
+    .container {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .left-panel {
+      flex: 0 0 480px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .right-panel {
+      flex: 1;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: auto;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar button {
+      padding: 8px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    #btnImportExcel {
+      background: #217346;
+    }
+
+    #btnImportExcel:hover {
+      background: #1a5c38;
+    }
+
+    #btnUpdate {
+      background: #1a73e8;
+    }
+
+    #btnUpdate:hover {
+      background: #1558b0;
+    }
+
+    #btnPrint {
+      background: #7c3aed;
+    }
+
+    #btnPrint:hover {
+      background: #6d28d9;
+    }
+
+    #btnCopyImage {
+      background: #f59e0b;
+    }
+
+    #btnCopyImage:hover {
+      background: #d97706;
+    }
+
+    #btnDownloadPng {
+      background: #475569;
+    }
+
+    #btnDownloadPng:hover {
+      background: #334155;
+    }
+
+    #btnExportExcel {
+      background: #ea580c;
+    }
+
+    #btnExportExcel:hover {
+      background: #c2410c;
+    }
+
+    #btnExportWord {
+      background: #0891b2;
+    }
+
+    #btnExportWord:hover {
+      background: #0e7490;
+    }
+
+    table#dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table#dataTable th,
+    table#dataTable td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    table#dataTable th {
+      background: #1a3c6e;
+      color: #fff;
+      position: sticky;
+      top: 0;
+    }
+
+    table#dataTable td input {
+      width: 100%;
+      border: 1px solid #ccc;
+      padding: 3px 4px;
+      font-size: 12px;
+      box-sizing: border-box;
+    }
+
+    .table-wrap {
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+    }
+
+    .btn-del {
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 3px 8px;
+    }
+
+    .btn-add-row {
+      margin-top: 8px;
+      width: 100%;
+      padding: 6px;
+      border: none;
+      border-radius: 6px;
+      background: #555;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .map-stage {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    #mapImage {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #mapCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      width: 480px;
+      max-width: 90vw;
+    }
+
+    .modal-box h3 {
+      margin-top: 0;
+    }
+
+    .modal-box textarea {
+      width: 100%;
+      height: 160px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      padding: 6px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    #btnPasteConfirm {
+      background: #1a73e8;
+    }
+
+    #btnPasteCancel {
+      background: #888;
+    }
+
+    @media print {
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      h2 {
+        display: none !important;
+      }
+
+      .left-panel {
+        display: none !important;
+      }
+
+      .container {
+        display: block;
+      }
+
+      .right-panel {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .map-stage {
+        max-width: 100%;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>BẢN ĐỒ ỨNG VIÊN - VIỆT NAM 63 TỈNH THÀNH</h2>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="toolbar">
+        <button id="btnImportExcel">📥 Nhập Excel</button>
+        <button id="btnUpdate">🔄 Cập nhật</button>
+        <button id="btnPrint">🖨️ In Bản Đồ / PDF</button>
+        <button id="btnCopyImage">📋 Sao chép ảnh (Copy)</button>
+        <button id="btnDownloadPng">⬇️ Tải ảnh PNG</button>
+        <button id="btnExportExcel">📊 Xuất Excel</button>
+        <button id="btnExportWord">📄 Xuất Word</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th style="width:30px;">STT</th>
+              <th>Họ và tên</th>
+              <th>Tỉnh/Thành</th>
+              <th style="width:60px;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="dataTableBody"></tbody>
+        </table>
+      </div>
+
+      <button class="btn-add-row" id="btnAddRow">+ Thêm dòng</button>
+    </div>
+
+    <div class="right-panel">
+      <div class="map-stage">
+        <img id="mapImage" src="BanDoVN.png" alt="Bản đồ Việt Nam">
+        <canvas id="mapCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="pasteModal">
+    <div class="modal-box">
+      <h3>Dán dữ liệu từ Excel</h3>
+      <p style="font-size:12px;color:#555;">
+        Dán 2 cột <b>Họ và tên</b> và <b>Tỉnh/Thành</b> (copy từ Excel, phân cách Tab):<br>
+        <code>NGUYEN VAN A&nbsp;&nbsp;&nbsp;HA NOI</code>
+      </p>
+      <textarea id="pasteArea" placeholder="NGUYEN VAN A	HA NOI&#10;TRAN THI B	HUNG YEN"></textarea>
+      <div class="modal-actions">
+        <button id="btnPasteCancel">Hủy</button>
+        <button id="btnPasteConfirm">Thêm vào danh sách</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ======================================================
+       TỌA ĐỘ 63 TỈNH THÀNH - ĐO CHÍNH XÁC TỪ ẢNH BanDoVN.png
+       rx, ry: tỷ lệ 0.0-1.0 theo kích thước ảnh gốc (1851 x 2409 px)
+       10 tỉnh mốc (anchor) được đo trực tiếp bằng Paint trên ảnh gốc,
+       các tỉnh còn lại được nội suy theo phép biến đổi affine
+       dựa trên các mốc chuẩn này (lấy Hà Nội làm gốc tham chiếu).
+       ====================================================== */
+    const PROVINCE_COORDINATES = {
+      // Vùng xám đậm số 1 - HÀ NỘI (mốc đo trực tiếp: 743, 591)
+      "HA NOI": { rx: 0.4014, ry: 0.2453 },
+      "HANOI": { rx: 0.4014, ry: 0.2453 },
+
+      // Số 2 - Vĩnh Phúc (nội suy)
+      "VINH PHUC": { rx: 0.3695, ry: 0.2481 },
+
+      // Số 3 - Hà Tây (nội suy)
+      "HA TAY": { rx: 0.3815, ry: 0.2697 },
+
+      // Số 4 - Bắc Ninh (nội suy)
+      "BAC NINH": { rx: 0.4241, ry: 0.2530 },
+
+      // Số 5 - Hải Dương (nội suy)
+      "HAI DUONG": { rx: 0.4442, ry: 0.2590 },
+
+      // Số 6 - Hưng Yên (mốc đo trực tiếp: 760, 620)
+      "HUNG YEN": { rx: 0.4106, ry: 0.2574 },
+
+      // Số 7 - Hải Phòng (mốc đo trực tiếp: 805, 615)
+      "HAI PHONG": { rx: 0.4349, ry: 0.2554 },
+
+      // Số 8 - Hà Nam (nội suy)
+      "HA NAM": { rx: 0.3938, ry: 0.2864 },
+
+      // Số 9 - Nam Định (nội suy)
+      "NAM DINH": { rx: 0.4275, ry: 0.2948 },
+
+      // Thái Bình (nội suy)
+      "THAI BINH": { rx: 0.4488, ry: 0.2865 },
+
+      // Số 11 - Quảng Ninh (nội suy)
+      "QUANG NINH": { rx: 0.5368, ry: 0.2196 },
+
+      // Số 12 - Hà Giang (nội suy)
+      "HA GIANG": { rx: 0.3374, ry: 0.1406 },
+
+      // Số 13 - Cao Bằng (nội suy)
+      "CAO BANG": { rx: 0.4145, ry: 0.1227 },
+
+      // Số 14 - Bắc Kạn (nội suy)
+      "BAC KAN": { rx: 0.3838, ry: 0.1609 },
+
+      // Số 15 - Tuyên Quang (nội suy)
+      "TUYEN QUANG": { rx: 0.3547, ry: 0.1800 },
+
+      // Số 16 - Lào Cai (nội suy)
+      "LAO CAI": { rx: 0.2730, ry: 0.1704 },
+
+      // Số 17 - Yên Bái (nội suy)
+      "YEN BAI": { rx: 0.2981, ry: 0.1991 },
+
+      // Số 18 - Thái Nguyên (mốc đo trực tiếp: 745, 510)
+      "THAI NGUYEN": { rx: 0.4025, ry: 0.2117 },
+
+      // Số 19 - Bắc Giang (nội suy)
+      "BAC GIANG": { rx: 0.4409, ry: 0.2171 },
+
+      // Số 20 - Lạng Sơn (mốc đo trực tiếp: 855, 530)
+      "LANG SON": { rx: 0.4619, ry: 0.2201 },
+
+      // Số 21 - Phú Thọ (mốc đo trực tiếp: 620, 565)
+      "PHU THO": { rx: 0.3349, ry: 0.2346 },
+
+      // Số 22 - Điện Biên (nội suy)
+      "DIEN BIEN": { rx: 0.1718, ry: 0.2300 },
+
+      // Số 23 - Lai Châu (nội suy)
+      "LAI CHAU": { rx: 0.2165, ry: 0.1894 },
+
+      // Số 24 - Sơn La (nội suy)
+      "SON LA": { rx: 0.2252, ry: 0.2492 },
+
+      // Số 25 - Ninh Bình (nội suy)
+      "NINH BINH": { rx: 0.3779, ry: 0.3127 },
+
+      // Số 26 - Hòa Bình (nội suy)
+      "HOA BINH": { rx: 0.3335, ry: 0.2684 },
+
+      // Số 27 - Thanh Hóa (nội suy)
+      "THANH HOA": { rx: 0.3402, ry: 0.3521 },
+
+      // Số 28 - Nghệ An (nội suy)
+      "NGHE AN": { rx: 0.3555, ry: 0.4154 },
+
+      // Số 29 - Hà Tĩnh (mốc đo trực tiếp: 790, 1080)
+      "HA TINH": { rx: 0.4268, ry: 0.4485 },
+
+      // Số 30 - Quảng Bình (nội suy)
+      "QUANG BINH": { rx: 0.4183, ry: 0.4848 },
+
+      // Số 31 - Quảng Trị (nội suy)
+      "QUANG TRI": { rx: 0.4504, ry: 0.5123 },
+
+      // Số 32 - Thừa Thiên Huế (nội suy)
+      "THUA THIEN HUE": { rx: 0.4762, ry: 0.5315 },
+      "HUE": { rx: 0.4762, ry: 0.5315 },
+
+      // Số 32/33 - Đà Nẵng (mốc đo trực tiếp: 1040, 1315)
+      "DA NANG": { rx: 0.5619, ry: 0.5459 },
+
+      // Số 33 - Quảng Nam (nội suy)
+      "QUANG NAM": { rx: 0.5005, ry: 0.5698 },
+
+      // Số 34 - Quảng Ngãi (nội suy)
+      "QUANG NGAI": { rx: 0.5252, ry: 0.6032 },
+
+      // Số 35 - Bình Định (nội suy)
+      "BINH DINH": { rx: 0.5568, ry: 0.6356 },
+
+      // Số 36 - Phú Yên (nội suy)
+      "PHU YEN": { rx: 0.5675, ry: 0.6714 },
+
+      // Số 37 - Khánh Hòa (nội suy)
+      "KHANH HOA": { rx: 0.5709, ry: 0.7132 },
+
+      // Số 38 - Ninh Thuận (nội suy)
+      "NINH THUAN": { rx: 0.5471, ry: 0.7503 },
+
+      // Số 39 - Bình Thuận (nội suy)
+      "BINH THUAN": { rx: 0.5025, ry: 0.7908 },
+
+      // Số 40 - Kon Tum (nội suy)
+      "KON TUM": { rx: 0.4702, ry: 0.6032 },
+
+      // Số 41 - Gia Lai (nội suy)
+      "GIA LAI": { rx: 0.4801, ry: 0.6486 },
+
+      // Số 42 - Đắk Lắk (nội suy)
+      "DAK LAK": { rx: 0.4896, ry: 0.6988 },
+
+      // Số 43 - Đắk Nông (nội suy)
+      "DAK NONG": { rx: 0.4516, ry: 0.7430 },
+
+      // Số 44 - Lâm Đồng (nội suy)
+      "LAM DONG": { rx: 0.4844, ry: 0.7610 },
+
+      // Số 45 - Bình Phước (nội suy)
+      "BINH PHUOC": { rx: 0.4340, ry: 0.7884 },
+
+      // Số 46 - Tây Ninh (nội suy)
+      "TAY NINH": { rx: 0.3701, ry: 0.8134 },
+
+      // Số 47 - Bình Dương (nội suy)
+      "BINH DUONG": { rx: 0.4107, ry: 0.8206 },
+
+      // Số 48 - Đồng Nai (nội suy)
+      "DONG NAI": { rx: 0.4517, ry: 0.8231 },
+
+      // Số 49 - Bà Rịa - Vũng Tàu (nội suy)
+      "BA RIA VUNG TAU": { rx: 0.4702, ry: 0.8482 },
+      "VUNG TAU": { rx: 0.4702, ry: 0.8482 },
+
+      // Vùng xám đậm số 50 - HỒ CHÍ MINH (mốc đo trực tiếp: 725, 2030)
+      "HO CHI MINH": { rx: 0.3917, ry: 0.8427 },
+      "TP HCM": { rx: 0.3917, ry: 0.8427 },
+      "HCM": { rx: 0.3917, ry: 0.8427 },
+
+      // Số 51 - Long An (nội suy)
+      "LONG AN": { rx: 0.3738, ry: 0.8505 },
+
+      // Số 52 - Tiền Giang (nội suy)
+      "TIEN GIANG": { rx: 0.3792, ry: 0.8684 },
+
+      // Số 53 - Bến Tre (nội suy)
+      "BEN TRE": { rx: 0.4059, ry: 0.8780 },
+
+      // Số 54 - Trà Vinh (nội suy)
+      "TRA VINH": { rx: 0.4038, ry: 0.9019 },
+
+      // Số 55 - Vĩnh Long (nội suy)
+      "VINH LONG": { rx: 0.3706, ry: 0.8887 },
+
+      // Số 56 - Đồng Tháp (nội suy)
+      "DONG THAP": { rx: 0.3308, ry: 0.8719 },
+
+      // Số 57 - An Giang (nội suy)
+      "AN GIANG": { rx: 0.2894, ry: 0.8743 },
+
+      // Số 58 - Kiên Giang (nội suy)
+      "KIEN GIANG": { rx: 0.2648, ry: 0.9209 },
+
+      // Số 59 - Cần Thơ (mốc đo trực tiếp: 615, 2165)
+      "CAN THO": { rx: 0.3322, ry: 0.8987 },
+
+      // Số 60 - Hậu Giang (nội suy)
+      "HAU GIANG": { rx: 0.3477, ry: 0.9162 },
+
+      // Số 61 - Sóc Trăng (nội suy)
+      "SOC TRANG": { rx: 0.3747, ry: 0.9210 },
+
+      // Số 62 - Bạc Liêu (nội suy)
+      "BAC LIEU": { rx: 0.3383, ry: 0.9460 },
+
+      // Số 63 - Cà Mau (nội suy)
+      "CA MAU": { rx: 0.2949, ry: 0.9723 }
+    };
+
+    function normalizeStr(str) {
+      return (str || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/gi, "d")
+        .toUpperCase()
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
+    function findProvince(inputName) {
+      const key = normalizeStr(inputName);
+      return PROVINCE_COORDINATES[key] || null;
+    }
+
+    function getJapaneseSuffix(provinceName) {
+      const key = normalizeStr(provinceName);
+      if (key === "HA NOI" || key === "HANOI") return "首都";
+      if (key === "HO CHI MINH" || key === "TP HCM" || key === "HCM") return "市";
+      return "省";
+    }
+
+    let candidates = [
+      { name: "NGUYEN DINH TRUNG", province: "HA NOI" },
+      { name: "PHAM CHUNG HIEU", province: "HUNG YEN" },
+      { name: "TRAN THI MAI", province: "PHU THO" },
+      { name: "LE VAN NAM", province: "HO CHI MINH" },
+      { name: "VU THI LAN", province: "DA NANG" },
+      { name: "HOANG VAN DUC", province: "HAI PHONG" },
+      { name: "DO THI HUONG", province: "CAN THO" }
+    ];
+
+    const tbody = document.getElementById("dataTableBody");
+
+    function renderTable() {
+      tbody.innerHTML = "";
+      candidates.forEach((c, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td><input type="text" value="${c.name}" data-field="name" data-idx="${idx}"></td>
+      <td><input type="text" value="${c.province}" data-field="province" data-idx="${idx}"></td>
+      <td style="text-align:center;"><button class="btn-del" data-idx="${idx}">✕</button></td>
+    `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    tbody.addEventListener("input", (e) => {
+      const idx = e.target.getAttribute("data-idx");
+      const field = e.target.getAttribute("data-field");
+      if (idx === null || !field) return;
+      candidates[idx][field] = e.target.value;
+    });
+
+    tbody.addEventListener("click", (e) => {
+      if (e.target.classList.contains("btn-del")) {
+        const idx = e.target.getAttribute("data-idx");
+        candidates.splice(idx, 1);
+        renderTable();
+        drawCallouts();
+      }
+    });
+
+    document.getElementById("btnAddRow").addEventListener("click", () => {
+      candidates.push({ name: "", province: "" });
+      renderTable();
+    });
+
+    const pasteModal = document.getElementById("pasteModal");
+    const pasteArea = document.getElementById("pasteArea");
+
+    document.getElementById("btnImportExcel").addEventListener("click", () => {
+      pasteArea.value = "";
+      pasteModal.classList.add("show");
+    });
+
+    document.getElementById("btnPasteCancel").addEventListener("click", () => {
+      pasteModal.classList.remove("show");
+    });
+
+    document.getElementById("btnPasteConfirm").addEventListener("click", () => {
+      const raw = pasteArea.value;
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      lines.forEach(line => {
+        const parts = line.split("\t");
+        if (parts.length >= 2) {
+          candidates.push({ name: parts[0].trim(), province: parts[1].trim() });
+        } else {
+          const alt = line.split(/,|\s{2,}/).map(s => s.trim()).filter(s => s);
+          if (alt.length >= 2) {
+            candidates.push({ name: alt[0], province: alt.slice(1).join(" ") });
+          }
+        }
+      });
+      pasteModal.classList.remove("show");
+      renderTable();
+      drawCallouts();
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      window.print();
+    });
+
+    /* ======================================================
+       XUẤT ẢNH BẢN ĐỒ RA WORD/EXCEL - KHÔNG BỊ LỖI DẤU X ĐỎ
+       Nguyên nhân lỗi cũ: thẻ <img src="data:image/png;base64,...">
+       bị Word/Excel chặn vì không phải định dạng MHTML chuẩn.
+       Giải pháp: đóng gói toàn bộ file theo chuẩn MHTML
+       (multipart/related, ảnh base64 nhúng qua Content-ID "cid:"),
+       đây là định dạng gốc mà Word/Excel luôn đọc được.
+       ====================================================== */
+    function wrapBase64(base64) {
+      const lineLen = 76;
+      const lines = [];
+      for (let i = 0; i < base64.length; i += lineLen) {
+        lines.push(base64.substring(i, i + lineLen));
+      }
+      return lines.join("\r\n");
+    }
+
+    function getCanvasBase64Png() {
+      return canvas.toDataURL("image/png").split(",")[1];
+    }
+
+    function buildWordMhtml() {
+      const boundary = "----boundary-word-doc";
+      const base64Lines = wrapBase64(getCanvasBase64Png());
+      return [
+        "MIME-Version: 1.0",
+        `Content-Type: multipart/related; boundary="${boundary}"`,
+        "",
+        `--${boundary}`,
+        'Content-Type: text/html; charset="utf-8"',
+        "Content-Location: file:///document.html",
+        "",
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">',
+        "<head>",
+        '<meta charset="UTF-8">',
+        "<title>Bản đồ ứng viên Việt Nam</title>",
+        "<style>",
+        "  body { font-family: Arial, sans-serif; margin: 30px; }",
+        "  h1 { text-align: center; color: #1a3c6e; page-break-after: avoid; }",
+        "  .map-container { text-align: center; margin: 20px 0; }",
+        "  .map-container img { width: 100%; max-width: 800px; height: auto; }",
+        "</style>",
+        "</head>",
+        "<body>",
+        "<h1>BẢN ĐỒ ỨNG VIÊN VIỆT NAM</h1>",
+        '<div class="map-container">',
+        '<img src="cid:map_image.png" alt="Bản đồ ứng viên">',
+        "</div>",
+        "</body>",
+        "</html>",
+        "",
+        `--${boundary}`,
+        'Content-Type: image/png;name="map_image.png"',
+        "Content-Transfer-Encoding: base64",
+        "Content-Location: file:///map_image.png",
+        "Content-ID: <map_image.png>",
+        "",
+        base64Lines,
+        "",
+        `--${boundary}--`
+      ].join("\r\n");
+    }
+
+    function buildExcelMhtml() {
+      const boundary = "----boundary-excel-doc";
+      const base64Lines = wrapBase64(getCanvasBase64Png());
+      return [
+        "MIME-Version: 1.0",
+        `Content-Type: multipart/related; boundary="${boundary}"`,
+        "",
+        `--${boundary}`,
+        'Content-Type: text/html; charset="utf-8"',
+        "Content-Location: file:///document.html",
+        "",
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">',
+        "<head>",
+        '<meta charset="UTF-8">',
+        "<!--[if gte mso 9]>",
+        "<xml>",
+        "<x:ExcelWorkbook>",
+        "<x:ExcelWorksheets>",
+        "<x:ExcelWorksheet>",
+        "<x:Name>Bản đồ ứng viên</x:Name>",
+        "<x:WorksheetOptions>",
+        "<x:Print>",
+        "<x:ValidPrinterInfo/>",
+        "</x:Print>",
+        "</x:WorksheetOptions>",
+        "</x:ExcelWorksheet>",
+        "</x:ExcelWorksheets>",
+        "</x:ExcelWorkbook>",
+        "</xml>",
+        "<![endif]-->",
+        "</head>",
+        "<body>",
+        '<h2 style="text-align:center;">BẢN ĐỒ ỨNG VIÊN VIỆT NAM</h2>',
+        '<div style="text-align:center;">',
+        '<img src="cid:map_image.png" alt="Bản đồ ứng viên">',
+        "</div>",
+        "</body>",
+        "</html>",
+        "",
+        `--${boundary}`,
+        'Content-Type: image/png;name="map_image.png"',
+        "Content-Transfer-Encoding: base64",
+        "Content-Location: file:///map_image.png",
+        "Content-ID: <map_image.png>",
+        "",
+        base64Lines,
+        "",
+        `--${boundary}--`
+      ].join("\r\n");
+    }
+
+    document.getElementById("btnCopyImage").addEventListener("click", () => {
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        navigator.clipboard.write([new ClipboardItem({ "image/png": blob })])
+          .then(() => {
+            alert("Đã sao chép ảnh bản đồ! Bạn chỉ cần mở Word hoặc Excel rồi nhấn Ctrl + V để dán.");
+          })
+          .catch(err => {
+            alert("Không thể sao chép ảnh: " + err.message);
+          });
+      }, "image/png");
+    });
+
+    document.getElementById("btnDownloadPng").addEventListener("click", () => {
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "BanDoUngVien_Full.png";
+        link.click();
+      }, "image/png");
+    });
+
+    document.getElementById("btnExportExcel").addEventListener("click", () => {
+      const mhtml = buildExcelMhtml();
+      const blob = new Blob([mhtml], { type: "application/vnd.ms-excel" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "BanDoUngVien.xls";
+      link.click();
+    });
+
+    document.getElementById("btnExportWord").addEventListener("click", () => {
+      const mhtml = buildWordMhtml();
+      const blob = new Blob([mhtml], { type: "application/msword" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "BanDoUngVien.doc";
+      link.click();
+    });
+
+    const mapImage = document.getElementById("mapImage");
+    const canvas = document.getElementById("mapCanvas");
+    const ctx = canvas.getContext("2d");
+
+    /* ======================================================
+       HỆ TỌA ĐỘ VẼ CỐ ĐỊNH (tương đương viewBox của SVG)
+       Kích thước thực tế của file BanDoVN.png: 1851 x 2409 px.
+       Canvas luôn được set width/height = đúng kích thước gốc này,
+       sau đó CSS co giãn (width:100%; height:auto) để khớp khung hiển thị.
+       => rx/ry (0.0-1.0) luôn quy đổi ra đúng pixel gốc của ảnh,
+          mũi tên ghim chính xác tuyệt đối dù màn hình to/nhỏ khác nhau.
+       ====================================================== */
+    const IMG_WIDTH = 1851;
+    const IMG_HEIGHT = 2409;
+
+    const BOX_WIDTH = 460;
+    const BOX_HEIGHT = 80;
+    const BOX_GAP = 28;
+    const MARGIN_X = 24;
+    const FONT_SIZE = 24;
+
+    function resizeCanvas() {
+      canvas.width = IMG_WIDTH;
+      canvas.height = IMG_HEIGHT;
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+    }
+
+    function wrapText(text, maxWidth) {
+      const words = text.split(" ");
+      const lines = [];
+      let current = "";
+      for (let word of words) {
+        const test = current ? current + " " + word : word;
+        if (ctx.measureText(test).width > maxWidth && current) {
+          lines.push(current);
+          current = word;
+          if (lines.length >= 2) {
+            let rest = words.slice(words.indexOf(word)).join(" ");
+            while (ctx.measureText(rest + "...").width > maxWidth && rest.length > 0) {
+              rest = rest.slice(0, -1);
+            }
+            lines.push(rest.trim() + (rest.length < words.slice(words.indexOf(word)).join(" ").length ? "..." : ""));
+            return lines;
+          }
+        } else {
+          current = test;
+        }
+      }
+      if (current) lines.push(current);
+      return lines.slice(0, 2);
+    }
+
+    function getBoxColor(provinceDisplayName) {
+      const key = normalizeStr(provinceDisplayName);
+      if (key === "HA NOI" || key === "HANOI") return "#1E40AF";
+      if (key === "HO CHI MINH" || key === "TP HCM" || key === "HCM") return "#DC2626";
+      return "#16A34A";
+    }
+
+    function drawArrow(fromX, fromY, toX, toY, color) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 3.5;
+
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY);
+      ctx.lineTo(toX, toY);
+      ctx.stroke();
+
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      const headLen = 20;
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(
+        toX - headLen * Math.cos(angle - Math.PI / 6),
+        toY - headLen * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.lineTo(
+        toX - headLen * Math.cos(angle + Math.PI / 6),
+        toY - headLen * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function layoutColumn(items) {
+      items.sort((a, b) => a.targetY - b.targetY);
+      const n = items.length;
+      if (n === 0) return items;
+
+      const positions = new Array(n);
+      positions[0] = items[0].targetY - BOX_HEIGHT / 2;
+
+      for (let i = 1; i < n; i++) {
+        const idealY = items[i].targetY - BOX_HEIGHT / 2;
+        const minY = positions[i - 1] + BOX_HEIGHT + BOX_GAP;
+        positions[i] = Math.max(idealY, minY);
+      }
+
+      const maxY = canvas.height - BOX_HEIGHT - 5;
+      if (positions[n - 1] > maxY) {
+        positions[n - 1] = maxY;
+        for (let i = n - 2; i >= 0; i--) {
+          const limit = positions[i + 1] - BOX_HEIGHT - BOX_GAP;
+          if (positions[i] > limit) positions[i] = limit;
+        }
+      }
+
+      items.forEach((item, i) => { item.boxY = Math.max(5, positions[i]); });
+      return items;
+    }
+
+    function drawCallouts() {
+      resizeCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `bold ${FONT_SIZE}px Arial`;
+      ctx.textBaseline = "middle";
+
+      const leftItems = [];
+      const rightItems = [];
+
+      candidates.forEach((c, idx) => {
+        if (!c.name || !c.province) return;
+        const prov = findProvince(c.province);
+        if (!prov) return;
+
+        const stt = idx + 1;
+        const suffix = getJapaneseSuffix(c.province);
+        const text = `${stt}. ${normalizeStr(c.name)} -> ${normalizeStr(c.province)} ${suffix}`;
+        const color = getBoxColor(c.province);
+
+        const targetX = prov.rx * canvas.width;
+        const targetY = prov.ry * canvas.height;
+
+        const item = { text, color, targetX, targetY };
+
+        if (prov.rx < 0.43) {
+          leftItems.push(item);
+        } else {
+          rightItems.push(item);
+        }
+      });
+
+      layoutColumn(leftItems);
+      layoutColumn(rightItems);
+
+      function renderSide(items, side) {
+        const maxTextWidth = BOX_WIDTH - 20;
+        items.forEach(item => {
+          const boxX = side === "left" ? MARGIN_X : canvas.width - MARGIN_X - BOX_WIDTH;
+          const boxY = item.boxY;
+          const lines = wrapText(item.text, maxTextWidth);
+          const boxCenterY = boxY + BOX_HEIGHT / 2;
+
+          ctx.fillStyle = item.color;
+          ctx.strokeStyle = "#333";
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          if (ctx.roundRect) {
+            ctx.roundRect(boxX, boxY, BOX_WIDTH, BOX_HEIGHT, 10);
+          } else {
+            ctx.rect(boxX, boxY, BOX_WIDTH, BOX_HEIGHT);
+          }
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = "#FFFFFF";
+          ctx.textAlign = "left";
+          const lineHeight = FONT_SIZE + 4;
+          const totalHeight = lines.length * lineHeight;
+          const startY = boxCenterY - totalHeight / 2 + lineHeight / 2;
+          lines.forEach((line, i) => {
+            ctx.fillText(line, boxX + 12, startY + i * lineHeight);
+          });
+
+          const arrowStartX = side === "left" ? boxX + BOX_WIDTH : boxX;
+          drawArrow(arrowStartX, boxCenterY, item.targetX, item.targetY, item.color);
+        });
+      }
+
+      renderSide(leftItems, "left");
+      renderSide(rightItems, "right");
+    }
+
+    document.getElementById("btnUpdate").addEventListener("click", drawCallouts);
+
+    if (mapImage.complete) {
+      drawCallouts();
+    } else {
+      mapImage.addEventListener("load", drawCallouts);
+    }
+    window.addEventListener("resize", drawCallouts);
+
+    renderTable();
+  </script>
+
+</body>
+
+</html>
