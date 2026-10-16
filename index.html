@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Bản Đồ Ứng Viên Việt Nam</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f0f2f5;
+    }
+
+    h2 {
+      margin: 0 0 10px 0;
+      text-align: center;
+      color: #1a3c6e;
+    }
+
+    .container {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .left-panel {
+      flex: 0 0 480px;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .right-panel {
+      flex: 1;
+      background: #fff;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: auto;
+    }
+
+    .company-input-group {
+      margin-bottom: 12px;
+    }
+
+    .company-input-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #1a3c6e;
+      font-size: 13px;
+    }
+
+    .company-input-group input {
+      width: 100%;
+      padding: 7px 8px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toolbar button {
+      padding: 8px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    #btnImportExcel {
+      background: #217346;
+    }
+
+    #btnImportExcel:hover {
+      background: #1a5c38;
+    }
+
+    #btnUpdate {
+      background: #1a73e8;
+    }
+
+    #btnUpdate:hover {
+      background: #1558b0;
+    }
+
+    #btnPrint {
+      background: #7c3aed;
+    }
+
+    #btnPrint:hover {
+      background: #6d28d9;
+    }
+
+    #btnDownloadPng {
+      background: #475569;
+    }
+
+    #btnDownloadPng:hover {
+      background: #334155;
+    }
+
+    #btnExportExcel {
+      background: #ea580c;
+    }
+
+    #btnExportExcel:hover {
+      background: #c2410c;
+    }
+
+    #btnResetLayout {
+      grid-column: 1 / span 2;
+      background: #b91c1c;
+    }
+
+    #btnResetLayout:hover {
+      background: #991b1b;
+    }
+
+    table#dataTable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    table#dataTable th,
+    table#dataTable td {
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    table#dataTable th {
+      background: #1a3c6e;
+      color: #fff;
+      position: sticky;
+      top: 0;
+    }
+
+    table#dataTable td input {
+      width: 100%;
+      border: 1px solid #ccc;
+      padding: 3px 4px;
+      font-size: 12px;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+
+    table#dataTable td input.input-error {
+      border: 1px solid #dc2626;
+      background: #fef2f2;
+      outline: none;
+    }
+
+    .province-warning {
+      display: none;
+      color: #dc2626;
+      font-size: 11px;
+      margin-top: 2px;
+      font-weight: bold;
+    }
+
+    .province-warning.show {
+      display: block;
+    }
+
+    .table-wrap {
+      max-height: 70vh;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+    }
+
+    .btn-del {
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 3px 8px;
+    }
+
+    .btn-add-row {
+      margin-top: 8px;
+      width: 100%;
+      padding: 6px;
+      border: none;
+      border-radius: 6px;
+      background: #555;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .map-stage {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    #mapImage {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #mapCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: auto;
+      cursor: default;
+    }
+
+    .watermark {
+      position: absolute;
+      bottom: 12px;
+      left: 16px;
+      font-size: 13px;
+      font-style: italic;
+      color: #888888;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      width: 480px;
+      max-width: 90vw;
+    }
+
+    .modal-box h3 {
+      margin-top: 0;
+    }
+
+    .modal-box textarea {
+      width: 100%;
+      height: 160px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      padding: 6px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    #btnPasteConfirm {
+      background: #1a73e8;
+    }
+
+    #btnPasteCancel {
+      background: #888;
+    }
+
+    @media print {
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      h2 {
+        display: none !important;
+      }
+
+      .left-panel {
+        display: none !important;
+      }
+
+      .container {
+        display: block;
+      }
+
+      .right-panel {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .map-stage {
+        max-width: 100%;
+        page-break-inside: avoid;
+      }
+
+      .watermark {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>BẢN ĐỒ ỨNG VIÊN - VIỆT NAM 63 TỈNH THÀNH</h2>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="company-input-group">
+        <label for="companyNameInput">Tên xí nghiệp / Công ty tiếp nhận</label>
+        <input type="text" id="companyNameInput" placeholder="久野金属株式会社 様">
+      </div>
+
+      <div class="toolbar">
+        <button id="btnImportExcel">📥 Nhập Excel</button>
+        <button id="btnUpdate">🔄 Cập nhật</button>
+        <button id="btnPrint">🖨️ In Bản Đồ / PDF</button>
+        <button id="btnDownloadPng">⬇️ Tải ảnh PNG</button>
+        <button id="btnExportExcel">📊 Xuất Excel</button>
+        <button id="btnResetLayout"
+          title="Xóa toàn bộ vị trí đã kéo tay và tính lại vị trí mặc định cho mọi ứng viên">♻️ Đặt lại vị trí mặc
+          định</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th style="width:30px;">STT</th>
+              <th>Họ và tên</th>
+              <th>Tỉnh/Thành</th>
+              <th style="width:60px;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="dataTableBody"></tbody>
+        </table>
+      </div>
+
+      <button class="btn-add-row" id="btnAddRow">+ Thêm dòng</button>
+    </div>
+
+    <div class="right-panel">
+      <div class="map-stage">
+        <img id="mapImage" src="BanDoVN.png">
+        <canvas id="mapCanvas"></canvas>
+      </div>
+      <div class="watermark">made by min</div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="pasteModal">
+    <div class="modal-box">
+      <h3>Dán dữ liệu từ Excel</h3>
+      <p style="font-size:12px;color:#555;">
+        Dán 2 cột <b>Họ và tên</b> và <b>Tỉnh/Thành</b> (copy từ Excel, phân cách Tab):<br>
+        <code>NGUYEN VAN A&nbsp;&nbsp;&nbsp;HA NOI</code>
+      </p>
+      <textarea id="pasteArea" placeholder="NGUYEN VAN A	HA NOI&#10;TRAN THI B	HUNG YEN"></textarea>
+      <div class="modal-actions">
+        <button id="btnPasteCancel">Hủy</button>
+        <button id="btnPasteConfirm">Thêm vào danh sách</button>
+      </div>
+    </div>
+  </div>
+
+  <datalist id="provinceDatalist">
+    <option value="Hà Nội">
+    <option value="Vĩnh Phúc">
+    <option value="Hà Tây">
+    <option value="Bắc Ninh">
+    <option value="Hải Dương">
+    <option value="Hưng Yên">
+    <option value="Hải Phòng">
+    <option value="Hà Nam">
+    <option value="Nam Định">
+    <option value="Thái Bình">
+    <option value="Quảng Ninh">
+    <option value="Hà Giang">
+    <option value="Cao Bằng">
+    <option value="Bắc Kạn">
+    <option value="Tuyên Quang">
+    <option value="Lào Cai">
+    <option value="Yên Bái">
+    <option value="Thái Nguyên">
+    <option value="Bắc Giang">
+    <option value="Lạng Sơn">
+    <option value="Phú Thọ">
+    <option value="Điện Biên">
+    <option value="Lai Châu">
+    <option value="Sơn La">
+    <option value="Ninh Bình">
+    <option value="Hòa Bình">
+    <option value="Thanh Hóa">
+    <option value="Nghệ An">
+    <option value="Hà Tĩnh">
+    <option value="Quảng Bình">
+    <option value="Quảng Trị">
+    <option value="Thừa Thiên Huế">
+    <option value="Đà Nẵng">
+    <option value="Quảng Nam">
+    <option value="Quảng Ngãi">
+    <option value="Bình Định">
+    <option value="Phú Yên">
+    <option value="Khánh Hòa">
+    <option value="Ninh Thuận">
+    <option value="Bình Thuận">
+    <option value="Kon Tum">
+    <option value="Gia Lai">
+    <option value="Đắk Lắk">
+    <option value="Đắk Nông">
+    <option value="Lâm Đồng">
+    <option value="Bình Phước">
+    <option value="Tây Ninh">
+    <option value="Bình Dương">
+    <option value="Đồng Nai">
+    <option value="Bà Rịa - Vũng Tàu">
+    <option value="Hồ Chí Minh">
+    <option value="Long An">
+    <option value="Tiền Giang">
+    <option value="Bến Tre">
+    <option value="Trà Vinh">
+    <option value="Vĩnh Long">
+    <option value="Đồng Tháp">
+    <option value="An Giang">
+    <option value="Kiên Giang">
+    <option value="Cần Thơ">
+    <option value="Hậu Giang">
+    <option value="Sóc Trăng">
+    <option value="Bạc Liêu">
+    <option value="Cà Mau">
+  </datalist>
+
+  <script src="map_data.js"></script>
+  <script>
+    /* ======================================================
+       TỌA ĐỘ 63 TỈNH THÀNH - ĐO CHÍNH XÁC TỪ ẢNH BanDoVN.png
+       rx, ry: tỷ lệ 0.0-1.0 theo kích thước ảnh gốc (1851 x 2409 px)
+       10 tỉnh mốc (anchor) được đo trực tiếp bằng Paint trên ảnh gốc,
+       các tỉnh còn lại được nội suy theo phép biến đổi affine
+       dựa trên các mốc chuẩn này (lấy Hà Nội làm gốc tham chiếu).
+       ====================================================== */
+    const PROVINCE_COORDINATES = {
+      // Vùng xám đậm số 1 - HÀ NỘI (mốc đo trực tiếp: 743, 591)
+      "HA NOI": { rx: 0.4014, ry: 0.2453 },
+      "HANOI": { rx: 0.4014, ry: 0.2453 },
+
+      // Số 2 - Vĩnh Phúc (nội suy)
+      "VINH PHUC": { rx: 0.3695, ry: 0.2481 },
+
+      // Số 3 - Hà Tây (nội suy)
+      "HA TAY": { rx: 0.3815, ry: 0.2697 },
+
+      // Số 4 - Bắc Ninh (nội suy)
+      "BAC NINH": { rx: 0.4241, ry: 0.2530 },
+
+      // Số 5 - Hải Dương (nội suy)
+      "HAI DUONG": { rx: 0.4442, ry: 0.2590 },
+
+      // Số 6 - Hưng Yên (mốc đo trực tiếp: 760, 620)
+      "HUNG YEN": { rx: 0.4106, ry: 0.2574 },
+
+      // Số 7 - Hải Phòng (mốc đo trực tiếp: 805, 615)
+      "HAI PHONG": { rx: 0.4349, ry: 0.2554 },
+
+      // Số 8 - Hà Nam (nội suy)
+      "HA NAM": { rx: 0.3938, ry: 0.2864 },
+
+      // Số 9 - Nam Định (nội suy)
+      "NAM DINH": { rx: 0.4275, ry: 0.2948 },
+
+      // Thái Bình (nội suy)
+      "THAI BINH": { rx: 0.4488, ry: 0.2865 },
+
+      // Số 11 - Quảng Ninh (nội suy)
+      "QUANG NINH": { rx: 0.5368, ry: 0.2196 },
+
+      // Số 12 - Hà Giang (nội suy)
+      "HA GIANG": { rx: 0.3374, ry: 0.1406 },
+
+      // Số 13 - Cao Bằng (nội suy)
+      "CAO BANG": { rx: 0.4145, ry: 0.1227 },
+
+      // Số 14 - Bắc Kạn (nội suy)
+      "BAC KAN": { rx: 0.3838, ry: 0.1609 },
+
+      // Số 15 - Tuyên Quang (nội suy)
+      "TUYEN QUANG": { rx: 0.3547, ry: 0.1800 },
+
+      // Số 16 - Lào Cai (nội suy)
+      "LAO CAI": { rx: 0.2730, ry: 0.1704 },
+
+      // Số 17 - Yên Bái (nội suy)
+      "YEN BAI": { rx: 0.2981, ry: 0.1991 },
+
+      // Số 18 - Thái Nguyên (mốc đo trực tiếp: 745, 510)
+      "THAI NGUYEN": { rx: 0.4025, ry: 0.2117 },
+
+      // Số 19 - Bắc Giang (nội suy)
+      "BAC GIANG": { rx: 0.4409, ry: 0.2171 },
+
+      // Số 20 - Lạng Sơn (mốc đo trực tiếp: 855, 530)
+      "LANG SON": { rx: 0.4619, ry: 0.2201 },
+
+      // Số 21 - Phú Thọ (mốc đo trực tiếp: 620, 565)
+      "PHU THO": { rx: 0.3349, ry: 0.2346 },
+
+      // Số 22 - Điện Biên (nội suy)
+      "DIEN BIEN": { rx: 0.1718, ry: 0.2300 },
+
+      // Số 23 - Lai Châu (nội suy)
+      "LAI CHAU": { rx: 0.2165, ry: 0.1894 },
+
+      // Số 24 - Sơn La (nội suy)
+      "SON LA": { rx: 0.2252, ry: 0.2492 },
+
+      // Số 25 - Ninh Bình (nội suy)
+      "NINH BINH": { rx: 0.3779, ry: 0.3127 },
+
+      // Số 26 - Hòa Bình (nội suy)
+      "HOA BINH": { rx: 0.3335, ry: 0.2684 },
+
+      // Số 27 - Thanh Hóa (nội suy)
+      "THANH HOA": { rx: 0.3402, ry: 0.3521 },
+
+      // Số 28 - Nghệ An (nội suy)
+      "NGHE AN": { rx: 0.3555, ry: 0.4154 },
+
+      // Số 29 - Hà Tĩnh (mốc đo trực tiếp: 790, 1080)
+      "HA TINH": { rx: 0.4268, ry: 0.4485 },
+
+      // Số 30 - Quảng Bình (nội suy)
+      "QUANG BINH": { rx: 0.4183, ry: 0.4848 },
+
+      // Số 31 - Quảng Trị (nội suy)
+      "QUANG TRI": { rx: 0.4504, ry: 0.5123 },
+
+      // Số 32 - Thừa Thiên Huế (nội suy)
+      "THUA THIEN HUE": { rx: 0.4762, ry: 0.5315 },
+      "HUE": { rx: 0.4762, ry: 0.5315 },
+
+      // Số 32/33 - Đà Nẵng (mốc đo trực tiếp: 1040, 1315)
+      "DA NANG": { rx: 0.5619, ry: 0.5459 },
+
+      // Số 33 - Quảng Nam (nội suy)
+      "QUANG NAM": { rx: 0.5005, ry: 0.5698 },
+
+      // Số 34 - Quảng Ngãi (nội suy)
+      "QUANG NGAI": { rx: 0.5252, ry: 0.6032 },
+
+      // Số 35 - Bình Định (nội suy)
+      "BINH DINH": { rx: 0.5568, ry: 0.6356 },
+
+      // Số 36 - Phú Yên (nội suy)
+      "PHU YEN": { rx: 0.5675, ry: 0.6714 },
+
+      // Số 37 - Khánh Hòa (nội suy)
+      "KHANH HOA": { rx: 0.5709, ry: 0.7132 },
+
+      // Số 38 - Ninh Thuận (nội suy)
+      "NINH THUAN": { rx: 0.5471, ry: 0.7503 },
+
+      // Số 39 - Bình Thuận (nội suy)
+      "BINH THUAN": { rx: 0.5025, ry: 0.7908 },
+
+      // Số 40 - Kon Tum (nội suy)
+      "KON TUM": { rx: 0.4702, ry: 0.6032 },
+
+      // Số 41 - Gia Lai (nội suy)
+      "GIA LAI": { rx: 0.4801, ry: 0.6486 },
+
+      // Số 42 - Đắk Lắk (nội suy)
+      "DAK LAK": { rx: 0.4896, ry: 0.6988 },
+
+      // Số 43 - Đắk Nông (nội suy)
+      "DAK NONG": { rx: 0.4516, ry: 0.7430 },
+
+      // Số 44 - Lâm Đồng (nội suy)
+      "LAM DONG": { rx: 0.4844, ry: 0.7610 },
+
+      // Số 45 - Bình Phước (nội suy)
+      "BINH PHUOC": { rx: 0.4340, ry: 0.7884 },
+
+      // Số 46 - Tây Ninh (nội suy)
+      "TAY NINH": { rx: 0.3701, ry: 0.8134 },
+
+      // Số 47 - Bình Dương (nội suy)
+      "BINH DUONG": { rx: 0.4107, ry: 0.8206 },
+
+      // Số 48 - Đồng Nai (nội suy)
+      "DONG NAI": { rx: 0.4517, ry: 0.8231 },
+
+      // Số 49 - Bà Rịa - Vũng Tàu (nội suy)
+      "BA RIA VUNG TAU": { rx: 0.4702, ry: 0.8482 },
+      "VUNG TAU": { rx: 0.4702, ry: 0.8482 },
+
+      // Vùng xám đậm số 50 - HỒ CHÍ MINH (mốc đo trực tiếp: 725, 2030)
+      "HO CHI MINH": { rx: 0.3917, ry: 0.8427 },
+      "TP HCM": { rx: 0.3917, ry: 0.8427 },
+      "HCM": { rx: 0.3917, ry: 0.8427 },
+
+      // Số 51 - Long An (nội suy)
+      "LONG AN": { rx: 0.3738, ry: 0.8505 },
+
+      // Số 52 - Tiền Giang (nội suy)
+      "TIEN GIANG": { rx: 0.3792, ry: 0.8684 },
+
+      // Số 53 - Bến Tre (nội suy)
+      "BEN TRE": { rx: 0.4059, ry: 0.8780 },
+
+      // Số 54 - Trà Vinh (nội suy)
+      "TRA VINH": { rx: 0.4038, ry: 0.9019 },
+
+      // Số 55 - Vĩnh Long (nội suy)
+      "VINH LONG": { rx: 0.3706, ry: 0.8887 },
+
+      // Số 56 - Đồng Tháp (nội suy)
+      "DONG THAP": { rx: 0.3308, ry: 0.8719 },
+
+      // Số 57 - An Giang (nội suy)
+      "AN GIANG": { rx: 0.2894, ry: 0.8743 },
+
+      // Số 58 - Kiên Giang (nội suy)
+      "KIEN GIANG": { rx: 0.2648, ry: 0.9209 },
+
+      // Số 59 - Cần Thơ (mốc đo trực tiếp: 615, 2165)
+      "CAN THO": { rx: 0.3322, ry: 0.8987 },
+
+      // Số 60 - Hậu Giang (nội suy)
+      "HAU GIANG": { rx: 0.3477, ry: 0.9162 },
+
+      // Số 61 - Sóc Trăng (nội suy)
+      "SOC TRANG": { rx: 0.3747, ry: 0.9210 },
+
+      // Số 62 - Bạc Liêu (nội suy)
+      "BAC LIEU": { rx: 0.3383, ry: 0.9460 },
+
+      // Số 63 - Cà Mau (nội suy)
+      "CA MAU": { rx: 0.2949, ry: 0.9723 }
+    };
+
+    function normalizeStr(str) {
+      return (str || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/đ/gi, "d")
+        .toUpperCase()
+        .trim()
+        .replace(/\s+/g, " ");
+    }
+
+    /* ======================================================
+       BỘ TỪ ĐIỂN BÍ DANH / TÊN THÀNH PHỐ PHỔ BIẾN
+       Khi người dùng nhập tên thành phố quen thuộc thay vì tên
+       tỉnh chính thức (ví dụ "nha trang" thay vì "khanh hoa"),
+       hệ thống tự động quy đổi về tỉnh chính thức tương ứng,
+       không còn bị âm thầm bỏ qua ứng viên trên bản đồ.
+       Key/value đều đã qua normalizeStr (không dấu, chữ hoa).
+       ====================================================== */
+    const PROVINCE_ALIASES = {
+      "NHA TRANG": "KHANH HOA",
+      "SAI GON": "HO CHI MINH",
+      "SAIGON": "HO CHI MINH",
+      "VUNG TAU": "BA RIA VUNG TAU",
+      "DA LAT": "LAM DONG",
+      "BUON MA THUOT": "DAK LAK",
+      "BMT": "DAK LAK",
+      "PHAN THIET": "BINH THUAN",
+      "QUY NHON": "BINH DINH"
+    };
+
+    // Quy đổi tên tỉnh/thành do người dùng nhập về key chuẩn trong
+    // PROVINCE_COORDINATES: trước tiên tra bí danh (alias), nếu không
+    // khớp bí danh nào thì dùng chính key đã chuẩn hoá (đã có thể là
+    // tên tỉnh chính thức như "HA NOI", "KHANH HOA",...).
+    function resolveProvinceKey(inputName) {
+      const key = normalizeStr(inputName);
+      return PROVINCE_ALIASES[key] || key;
+    }
+
+    function findProvince(inputName) {
+      const key = resolveProvinceKey(inputName);
+      return PROVINCE_COORDINATES[key] || null;
+    }
+
+    function getJapaneseSuffix(provinceName) {
+      const key = resolveProvinceKey(provinceName);
+      if (key === "HA NOI" || key === "HANOI") return "首都";
+      if (key === "HO CHI MINH" || key === "TP HCM" || key === "HCM") return "市";
+      return "省";
+    }
+
+    /* ======================================================
+       PHÂN VÙNG MIỀN BẮC / TRUNG / NAM - để quyết định ô nên
+       ưu tiên xếp cột nào trong thuật toán tự động layout.
+       Miền Bắc & Miền Trung ưu tiên dạt sang cột PHẢI (khoảng
+       trống biển Đông / đảo Hải Nam). Miền Nam ưu tiên dạt
+       sang cột TRÁI (khoảng trống phía Lào / vịnh Thái Lan).
+       ====================================================== */
+    const NORTH_PROVINCES = ["HA NOI", "HANOI", "HA GIANG", "CAO BANG", "BAC KAN", "TUYEN QUANG",
+      "LAO CAI", "YEN BAI", "THAI NGUYEN", "LANG SON", "BAC GIANG", "PHU THO", "VINH PHUC",
+      "BAC NINH", "QUANG NINH", "DIEN BIEN", "LAI CHAU", "SON LA", "HOA BINH", "HAI DUONG",
+      "HAI PHONG", "HUNG YEN", "THAI BINH", "HA NAM", "NAM DINH", "NINH BINH", "HA TAY"];
+
+    const CENTRAL_PROVINCES = ["THANH HOA", "NGHE AN", "HA TINH", "QUANG BINH", "QUANG TRI",
+      "THUA THIEN HUE", "HUE", "DA NANG", "QUANG NAM", "QUANG NGAI", "BINH DINH", "PHU YEN",
+      "KHANH HOA", "NINH THUAN", "BINH THUAN", "KON TUM", "GIA LAI", "DAK LAK", "DAK NONG",
+      "LAM DONG"];
+
+    function getPreferredSide(provinceName) {
+      const key = resolveProvinceKey(provinceName);
+      if (NORTH_PROVINCES.includes(key) || CENTRAL_PROVINCES.includes(key)) return "right";
+      return "left";
+    }
+
+    let candidates = [
+      { name: "NGUYEN DINH TRUNG", province: "HA NOI" },
+      { name: "PHAM CHUNG HIEU", province: "HUNG YEN" },
+      { name: "TRAN THI MAI", province: "PHU THO" },
+      { name: "LE VAN NAM", province: "HO CHI MINH" },
+      { name: "VU THI LAN", province: "DA NANG" },
+      { name: "HOANG VAN DUC", province: "HAI PHONG" },
+      { name: "DO THI HUONG", province: "CAN THO" }
+    ];
+
+    const tbody = document.getElementById("dataTableBody");
+
+    // Cập nhật trạng thái cảnh báo (viền đỏ + thông báo) cho 1 input
+    // tỉnh/thành, dựa trên việc có tìm được tỉnh tương ứng hay không.
+    // Dùng chung cho cả lúc render ban đầu và lúc gõ phím trực tiếp.
+    function updateProvinceValidation(inputEl, provinceValue) {
+      const warningEl = inputEl.parentElement.querySelector(".province-warning");
+      const isValid = !provinceValue || findProvince(provinceValue);
+      if (isValid) {
+        inputEl.classList.remove("input-error");
+        if (warningEl) warningEl.classList.remove("show");
+      } else {
+        inputEl.classList.add("input-error");
+        if (warningEl) warningEl.classList.add("show");
+      }
+    }
+
+    function renderTable() {
+      tbody.innerHTML = "";
+      candidates.forEach((c, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td><input type="text" value="${c.name}" data-field="name" data-idx="${idx}"></td>
+      <td>
+        <input type="text" value="${c.province}" data-field="province" data-idx="${idx}" list="provinceDatalist">
+        <div class="province-warning">Chưa nhận diện được tỉnh</div>
+      </td>
+      <td style="text-align:center;"><button class="btn-del" data-idx="${idx}">✕</button></td>
+    `;
+        tbody.appendChild(tr);
+        const provinceInput = tr.querySelector('input[data-field="province"]');
+        updateProvinceValidation(provinceInput, c.province);
+      });
+    }
+
+    tbody.addEventListener("input", (e) => {
+      const idx = e.target.getAttribute("data-idx");
+      const field = e.target.getAttribute("data-field");
+      if (idx === null || !field) return;
+      candidates[idx][field] = e.target.value;
+      if (field === "province") {
+        updateProvinceValidation(e.target, e.target.value);
+      }
+    });
+
+    tbody.addEventListener("click", (e) => {
+      if (e.target.classList.contains("btn-del")) {
+        const idx = e.target.getAttribute("data-idx");
+        candidates.splice(idx, 1);
+        renderTable();
+        drawCallouts();
+      }
+    });
+
+    document.getElementById("btnAddRow").addEventListener("click", () => {
+      candidates.push({ name: "", province: "" });
+      renderTable();
+    });
+
+    const companyNameInput = document.getElementById("companyNameInput");
+
+    // Nhãn tên xí nghiệp: kéo thả tự do được (không có mũi tên)
+    const companyLabel = { text: "", override: false, x: 0, y: 0, _box: null };
+
+    companyNameInput.addEventListener("input", () => {
+      companyLabel.text = companyNameInput.value;
+      drawCallouts();
+    });
+
+    const pasteModal = document.getElementById("pasteModal");
+    const pasteArea = document.getElementById("pasteArea");
+
+    document.getElementById("btnImportExcel").addEventListener("click", () => {
+      pasteArea.value = "";
+      pasteModal.classList.add("show");
+    });
+
+    document.getElementById("btnPasteCancel").addEventListener("click", () => {
+      pasteModal.classList.remove("show");
+    });
+
+    document.getElementById("btnPasteConfirm").addEventListener("click", () => {
+      const raw = pasteArea.value;
+      const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      lines.forEach(line => {
+        const parts = line.split("\t");
+        if (parts.length >= 2) {
+          candidates.push({ name: parts[0].trim(), province: parts[1].trim() });
+        } else {
+          const alt = line.split(/,|\s{2,}/).map(s => s.trim()).filter(s => s);
+          if (alt.length >= 2) {
+            candidates.push({ name: alt[0], province: alt.slice(1).join(" ") });
+          }
+        }
+      });
+      pasteModal.classList.remove("show");
+      renderTable();
+      drawCallouts();
+    });
+
+    document.getElementById("btnPrint").addEventListener("click", () => {
+      window.print();
+    });
+
+    /* ======================================================
+       XUẤT ẢNH BẢN ĐỒ RA EXCEL - KHÔNG BỊ LỖI DẤU X ĐỎ
+       Nguyên nhân lỗi cũ: thẻ <img src="data:image/png;base64,...">
+       bị Excel chặn vì không phải định dạng MHTML chuẩn.
+       Giải pháp: đóng gói toàn bộ file theo chuẩn MHTML
+       (multipart/related, ảnh base64 nhúng qua Content-ID "cid:"),
+       đây là định dạng gốc mà Excel luôn đọc được.
+       ====================================================== */
+    function wrapBase64(base64) {
+      const lineLen = 76;
+      const lines = [];
+      for (let i = 0; i < base64.length; i += lineLen) {
+        lines.push(base64.substring(i, i + lineLen));
+      }
+      return lines.join("\r\n");
+    }
+
+    function getCanvasBase64Png() {
+      return canvas.toDataURL("image/png").split(",")[1];
+    }
+
+    function buildExcelMhtml() {
+      const boundary = "----boundary-excel-doc";
+      const base64Lines = wrapBase64(getCanvasBase64Png());
+      return [
+        "MIME-Version: 1.0",
+        `Content-Type: multipart/related; boundary="${boundary}"`,
+        "",
+        `--${boundary}`,
+        'Content-Type: text/html; charset="utf-8"',
+        "Content-Location: file:///document.html",
+        "",
+        '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">',
+        "<head>",
+        '<meta charset="UTF-8">',
+        "<!--[if gte mso 9]>",
+        "<xml>",
+        "<x:ExcelWorkbook>",
+        "<x:ExcelWorksheets>",
+        "<x:ExcelWorksheet>",
+        "<x:Name>Bản đồ ứng viên</x:Name>",
+        "<x:WorksheetOptions>",
+        "<x:Print>",
+        "<x:ValidPrinterInfo/>",
+        "</x:Print>",
+        "</x:WorksheetOptions>",
+        "</x:ExcelWorksheet>",
+        "</x:ExcelWorksheets>",
+        "</x:ExcelWorkbook>",
+        "</xml>",
+        "<![endif]-->",
+        "</head>",
+        "<body>",
+        '<h2 style="text-align:center;">BẢN ĐỒ ỨNG VIÊN VIỆT NAM</h2>',
+        '<div style="text-align:center;">',
+        '<img src="cid:map_image.png" alt="Bản đồ ứng viên">',
+        "</div>",
+        "</body>",
+        "</html>",
+        "",
+        `--${boundary}`,
+        'Content-Type: image/png;name="map_image.png"',
+        "Content-Transfer-Encoding: base64",
+        "Content-Location: file:///map_image.png",
+        "Content-ID: <map_image.png>",
+        "",
+        base64Lines,
+        "",
+        `--${boundary}--`
+      ].join("\r\n");
+    }
+
+    document.getElementById("btnDownloadPng").addEventListener("click", () => {
+      try {
+        canvas.toBlob(blob => {
+          if (!blob) {
+            alert("Lỗi khi tải ảnh PNG: canvas không trả về dữ liệu ảnh.");
+            return;
+          }
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "BanDoUngVien_Full.png";
+          link.click();
+        }, "image/png");
+      } catch (err) {
+        alert("Lỗi khi tải ảnh PNG: " + err.message);
+      }
+    });
+
+    document.getElementById("btnExportExcel").addEventListener("click", () => {
+      try {
+        const mhtml = buildExcelMhtml();
+        const blob = new Blob([mhtml], { type: "application/vnd.ms-excel" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "BanDoUngVien.xls";
+        link.click();
+      } catch (err) {
+        alert("Lỗi khi xuất Excel: " + err.message);
+      }
+    });
+
+    const mapImage = document.getElementById("mapImage");
+    // Ưu tiên nguồn ảnh base64 nhúng sẵn (map_data.js) để tránh lỗi
+    // "Tainted Canvas" khi mở file bằng giao thức file:/// - ảnh base64
+    // dạng data: URI không bị trình duyệt coi là tài nguyên khác nguồn,
+    // nhờ đó canvas.toDataURL()/toBlob() hoạt động bình thường. Nếu vì
+    // lý do nào đó map_data.js không tải được, dùng lại file ảnh gốc.
+    mapImage.src = (typeof MAP_IMAGE_SRC !== 'undefined') ? MAP_IMAGE_SRC : 'BanDoVN.png';
+    const canvas = document.getElementById("mapCanvas");
+    const ctx = canvas.getContext("2d");
+
+    /* ======================================================
+       HỆ TỌA ĐỘ VẼ CỐ ĐỊNH (tương đương viewBox của SVG)
+       Kích thước thực tế của file BanDoVN.png: 1851 x 2409 px.
+       Canvas luôn được set width/height = đúng kích thước gốc này,
+       sau đó CSS co giãn (width:100%; height:auto) để khớp khung hiển thị.
+       => rx/ry (0.0-1.0) luôn quy đổi ra đúng pixel gốc của ảnh,
+          mũi tên ghim chính xác tuyệt đối dù màn hình to/nhỏ khác nhau.
+       ====================================================== */
+    const IMG_WIDTH = 1851;
+    const IMG_HEIGHT = 2409;
+
+    const BOX_HEIGHT = 80;
+    const BOX_GAP = 7;
+    const BOX_PADDING_X = 14;
+    const MARGIN_X = 24;
+    const FONT_SIZE = 24;
+    const TOP_RESERVED = 70;
+    const COMPANY_FONT_SIZE = 38;
+    const SPECIAL_BOX_HEIGHT = 56;
+    const DRAG_HANDLE_RADIUS = 26;
+    const MIN_BOX_WIDTH = 60;
+    const RESIZE_HANDLE_WIDTH = 8;
+    const MAX_RIGHT_COLUMN_ITEMS = 6;
+    const OVERLAP_GAP = 8;
+
+    function resizeCanvas() {
+      canvas.width = IMG_WIDTH;
+      canvas.height = IMG_HEIGHT;
+      canvas.style.width = "100%";
+      canvas.style.height = "auto";
+    }
+
+    // Giới hạn 1 giá trị trong khoảng [min, max] - dùng cho mọi phép
+    // "boundary clamp" để ô/mục tiêu không bao giờ văng ra ngoài canvas.
+    function clamp(value, min, max) {
+      if (max < min) return max;
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function getBoxColor(provinceDisplayName) {
+      return "#16A34A";
+    }
+
+    function drawArrow(fromX, fromY, toX, toY, color) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 3.5;
+
+      ctx.beginPath();
+      ctx.moveTo(fromX, fromY);
+      ctx.lineTo(toX, toY);
+      ctx.stroke();
+
+      const angle = Math.atan2(toY - fromY, toX - fromX);
+      const headLen = 20;
+      ctx.beginPath();
+      ctx.moveTo(toX, toY);
+      ctx.lineTo(
+        toX - headLen * Math.cos(angle - Math.PI / 6),
+        toY - headLen * Math.sin(angle - Math.PI / 6)
+      );
+      ctx.lineTo(
+        toX - headLen * Math.cos(angle + Math.PI / 6),
+        toY - headLen * Math.sin(angle + Math.PI / 6)
+      );
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    /* Vẽ 1 ô nhãn (hộp màu + chữ trắng + mũi tên trỏ vào target).
+       Điểm xuất phát của mũi tên tự chọn cạnh trái/phải của ô
+       tùy theo target nằm bên nào so với tâm ô - luôn đúng dù ô
+       đã bị kéo thả đến vị trí tuỳ ý. Nội dung chữ được clip theo
+       chiều rộng ô để không tràn ra ngoài khi ô nhỏ hơn độ dài chữ.
+       Ô được giữ phẳng, không vẽ chốt/vạch trang trí nào ở mép -
+       vùng tay cầm kéo giãn chiều rộng ở mép phải hoàn toàn trong
+       suốt (không vẽ gì), chỉ bắt sự kiện chuột ngầm. */
+    function renderCalloutBox(opts) {
+      const { boxX, boxY, boxWidth, boxHeight, text, color, targetX, targetY, strokeColor } = opts;
+      const boxCenterY = boxY + boxHeight / 2;
+
+      ctx.fillStyle = color;
+      ctx.strokeStyle = strokeColor || "#333";
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 10);
+      } else {
+        ctx.rect(boxX, boxY, boxWidth, boxHeight);
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(boxX + 2, boxY, boxWidth - 4, boxHeight);
+      ctx.clip();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.textAlign = "left";
+      ctx.fillText(text, boxX + BOX_PADDING_X, boxCenterY);
+      ctx.restore();
+
+      const boxCenterX = boxX + boxWidth / 2;
+      const arrowStartX = targetX < boxCenterX ? boxX : boxX + boxWidth;
+      drawArrow(arrowStartX, boxCenterY, targetX, targetY, color);
+    }
+
+    /* ======================================================
+       THUẬT TOÁN TỰ ĐỘNG XẾP VỊ TRÍ Ô - KHÔNG ĐÈ NHAU, KHÔNG
+       CHE BẢN ĐỒ:
+       - Mọi ô auto-layout luôn nằm sát rìa trái (x = MARGIN_X)
+         hoặc rìa phải (x = width - MARGIN_X - boxWidth) của
+         canvas, tuyệt đối không nằm giữa vùng hình bản đồ.
+       - Ô thuộc Miền Bắc/Miền Trung được ưu tiên xếp cột PHẢI.
+         Ô thuộc Miền Nam được ưu tiên xếp cột TRÁI.
+       - Khi cột phải vượt quá MAX_RIGHT_COLUMN_ITEMS ô, các ô
+         dư (xa mục tiêu nhất tính theo thứ tự từ trên xuống)
+         tự động tràn qua cột trái.
+       - Trong cùng 1 cột, các ô cách nhau tối thiểu BOX_GAP
+         (7px) theo trục dọc để không dính đè, giữ mũi tên
+         thoáng, không rối.
+       ====================================================== */
+    function layoutColumn(items) {
+      items.sort((a, b) => a.targetY - b.targetY);
+      const n = items.length;
+      if (n === 0) return items;
+
+      const positions = new Array(n);
+      positions[0] = Math.max(items[0].targetY - BOX_HEIGHT / 2, TOP_RESERVED);
+
+      for (let i = 1; i < n; i++) {
+        const idealY = items[i].targetY - BOX_HEIGHT / 2;
+        const minY = positions[i - 1] + BOX_HEIGHT + BOX_GAP;
+        positions[i] = Math.max(idealY, minY);
+      }
+
+      const maxY = canvas.height - BOX_HEIGHT - 5;
+      if (positions[n - 1] > maxY) {
+        positions[n - 1] = maxY;
+        for (let i = n - 2; i >= 0; i--) {
+          const limit = positions[i + 1] - BOX_HEIGHT - BOX_GAP;
+          if (positions[i] > limit) positions[i] = limit;
+        }
+      }
+
+      items.forEach((item, i) => { item.boxY = Math.max(TOP_RESERVED, positions[i]); });
+      return items;
+    }
+
+    // Gom nhóm theo cột ưu tiên, tràn ô dư từ phải sang trái khi quá dày
+    function assignColumns(items) {
+      const rightPreferred = [];
+      const leftPreferred = [];
+      items.forEach(item => {
+        if (item.preferredSide === "right") rightPreferred.push(item);
+        else leftPreferred.push(item);
+      });
+
+      rightPreferred.sort((a, b) => a.targetY - b.targetY);
+
+      let rightItems = rightPreferred;
+      let overflow = [];
+      if (rightPreferred.length > MAX_RIGHT_COLUMN_ITEMS) {
+        rightItems = rightPreferred.slice(0, MAX_RIGHT_COLUMN_ITEMS);
+        overflow = rightPreferred.slice(MAX_RIGHT_COLUMN_ITEMS);
+      }
+
+      return { leftItems: leftPreferred.concat(overflow), rightItems };
+    }
+
+    /* ======================================================
+       CHỐNG ĐÈ (ANTI-OVERLAP): nếu 2 ô bất kỳ (ứng viên hoặc
+       nhãn đặc biệt) có vùng hình chữ nhật giao nhau - thường
+       do 2 ứng viên cùng trỏ vào 1 tỉnh hoặc bị trùng toạ độ
+       sau khi kéo tay - tự động đẩy ô bị đè xuống dưới ô kia
+       1 khoảng OVERLAP_GAP để không còn che khuất nhau. Chạy
+       nhiều lượt (pass) để xử lý cả trường hợp dây chuyền (đẩy
+       ô này lại chạm phải ô khác), sau đó chốt lại biên dưới
+       của canvas để không bị đẩy văng ra ngoài khung nhìn.
+       ====================================================== */
+    function rectsOverlap(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function resolveOverlaps(items) {
+      for (let pass = 0; pass < 6; pass++) {
+        let moved = false;
+        for (let i = 0; i < items.length; i++) {
+          for (let j = 0; j < items.length; j++) {
+            if (i === j) continue;
+            const a = items[i];
+            const b = items[j];
+            const boxA = { x: a.boxX, y: a.boxY, w: a.boxWidth, h: a.boxHeight };
+            const boxB = { x: b.boxX, y: b.boxY, w: b.boxWidth, h: b.boxHeight };
+            if (rectsOverlap(boxA, boxB)) {
+              const pushTo = boxA.y + boxA.h + OVERLAP_GAP;
+              if (b.boxY < pushTo) {
+                b.boxY = pushTo;
+                moved = true;
+              }
+            }
+          }
+        }
+        if (!moved) break;
+      }
+      // Sau khi đẩy so-le, đảm bảo vẫn nằm trong khung nhìn canvas (boundary clamp)
+      items.forEach(item => {
+        item.boxY = clamp(item.boxY, TOP_RESERVED, canvas.height - 5 - item.boxHeight);
+      });
+    }
+
+    /* ======================================================
+       2 NHÃN ĐẶC BIỆT CỐ ĐỊNH: HÀ NỘI (thủ đô) & TP.HCM
+       Độc lập hoàn toàn với danh sách ứng viên, luôn hiển thị
+       trên bản đồ, màu nền ĐỎ nổi bật kèm viền đỏ đậm để làm
+       điểm nhấn thủ đô/trung tâm - chữ trắng in hoa đậm. Vị trí
+       mặc định nằm sát lề phải nhưng ở ngang hàng với vị trí
+       thực tế của Hà Nội / TP.HCM trên bản đồ (tương tự cách
+       các ô ứng viên như Phú Thọ, Hải Phòng được xếp gần khu
+       vực mục tiêu), KHÔNG còn bị văng ra góc trên/góc dưới của
+       bảng. Có thể kéo thả tự do (ô và đầu mũi tên) - vị trí sau
+       khi chỉnh được lưu lại trong chính object nhãn.
+       ====================================================== */
+    const hanoiLabel = { boxOverride: false, targetOverride: false, boxWidthOverride: null, boxX: 0, boxY: 0, targetX: 0, targetY: 0, _box: null, _target: null };
+    const hcmLabel = { boxOverride: false, targetOverride: false, boxWidthOverride: null, boxX: 0, boxY: 0, targetX: 0, targetY: 0, _box: null, _target: null };
+
+    // Chỉ TÍNH TOÁN vị trí/kích thước của nhãn đặc biệt (không vẽ ngay),
+    // để có thể chạy resolveOverlaps() chống đè với các ô ứng viên khác
+    // trước khi thực sự vẽ lên canvas.
+    function computeSpecialLabelLayout(ref, text, defaultTargetX, defaultTargetY, defaultBoxX, defaultBoxY) {
+      ctx.font = `bold ${FONT_SIZE}px Arial`;
+      const autoWidth = ctx.measureText(text).width + BOX_PADDING_X * 2;
+      // Chiều rộng tối thiểu luôn phải đủ ôm trọn văn bản (autoWidth) để không
+      // bao giờ bị cắt chữ, ngay cả khi người dùng đã kéo giãn thu nhỏ trước đó.
+      const boxWidth = Math.max(MIN_BOX_WIDTH, autoWidth, ref.boxWidthOverride || 0);
+      const boxHeight = SPECIAL_BOX_HEIGHT;
+
+      const targetX = ref.targetOverride ? ref.targetX : defaultTargetX;
+      const targetY = ref.targetOverride ? ref.targetY : defaultTargetY;
+
+      let boxX = ref.boxOverride ? ref.boxX : defaultBoxX(boxWidth);
+      let boxY = ref.boxOverride ? ref.boxY : defaultBoxY(boxHeight);
+
+      // Boundary clamp: ô không bao giờ được văng ra ngoài khung nhìn canvas.
+      boxX = clamp(boxX, MARGIN_X, canvas.width - MARGIN_X - boxWidth);
+      boxY = clamp(boxY, TOP_RESERVED, canvas.height - 5 - boxHeight);
+
+      return {
+        ref, isSpecial: true, text, color: "#cc0000", strokeColor: "#7a0000",
+        boxX, boxY, boxWidth, boxHeight, targetX, targetY
+      };
+    }
+
+    function renderCompanyLabel() {
+      ctx.font = `normal ${COMPANY_FONT_SIZE}px "MS Mincho", "ＭＳ 明朝", serif`;
+      const text = `企業名 : ${companyLabel.text || ""}`;
+      const textWidth = ctx.measureText(text).width;
+      const boxHeight = COMPANY_FONT_SIZE * 1.2;
+
+      let x = companyLabel.override ? companyLabel.x : MARGIN_X;
+      let y = companyLabel.override ? companyLabel.y : 10;
+
+      // Boundary clamp: nhãn tên công ty cũng không bao giờ văng ra ngoài canvas.
+      x = clamp(x, 0, Math.max(0, canvas.width - textWidth - 10));
+      y = clamp(y, 0, canvas.height - boxHeight);
+
+      ctx.textBaseline = "top";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#000000";
+      ctx.fillText(text, x, y);
+      ctx.textBaseline = "middle";
+
+      companyLabel._box = { x, y, w: textWidth, h: boxHeight };
+    }
+
+    function drawCallouts() {
+      resizeCanvas();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+      ctx.textBaseline = "middle";
+
+      // Dòng chữ tên xí nghiệp / công ty tiếp nhận - góc trên cùng bên trái (kéo thả được)
+      renderCompanyLabel();
+
+      ctx.font = `bold ${FONT_SIZE}px Arial`;
+
+      const autoItems = [];
+      const fixedItems = [];
+
+      candidates.forEach((c, idx) => {
+        c._box = null;
+        c._target = null;
+        if (!c.name || !c.province) return;
+        const prov = findProvince(c.province);
+        if (!prov) return;
+
+        const stt = idx + 1;
+        const suffix = getJapaneseSuffix(c.province);
+        const text = `${stt}. ${normalizeStr(c.name)} -> ${normalizeStr(c.province)} ${suffix}`;
+        const color = getBoxColor(c.province);
+
+        const targetX = c.targetOverride ? c.targetX : prov.rx * canvas.width;
+        const targetY = c.targetOverride ? c.targetY : prov.ry * canvas.height;
+
+        const autoWidth = ctx.measureText(text).width + BOX_PADDING_X * 2;
+        // Chiều rộng tối thiểu luôn phải đủ ôm trọn văn bản (autoWidth) để không
+        // bao giờ bị cắt chữ, ngay cả khi người dùng đã kéo giãn thu nhỏ trước đó.
+        const boxWidth = Math.max(MIN_BOX_WIDTH, autoWidth, c.boxWidthOverride || 0);
+
+        const item = { c, isSpecial: false, text, color, targetX, targetY, boxWidth, boxHeight: BOX_HEIGHT, preferredSide: getPreferredSide(c.province) };
+
+        if (c.boxOverride) {
+          // Boundary clamp: ô đã bị kéo tay cũng không bao giờ được văng ra ngoài canvas.
+          item.boxX = clamp(c.boxX, MARGIN_X, canvas.width - MARGIN_X - boxWidth);
+          item.boxY = clamp(c.boxY, TOP_RESERVED, canvas.height - 5 - BOX_HEIGHT);
+          fixedItems.push(item);
+        } else {
+          autoItems.push(item);
+        }
+      });
+
+      const { leftItems, rightItems } = assignColumns(autoItems);
+
+      layoutColumn(leftItems);
+      layoutColumn(rightItems);
+      leftItems.forEach(item => { item.boxX = MARGIN_X; });
+      rightItems.forEach(item => { item.boxX = canvas.width - MARGIN_X - item.boxWidth; });
+
+      // Nhãn đặc biệt cố định: Hà Nội (thủ đô) & TP.HCM - chỉ TÍNH TOÁN vị trí
+      // ở đây, việc vẽ thực tế được gộp chung vào vòng lặp render bên dưới
+      // để có thể chống đè (resolveOverlaps) với toàn bộ ô ứng viên khác.
+      const hanoiCoord = PROVINCE_COORDINATES["HA NOI"];
+      const hanoiItem = computeSpecialLabelLayout(
+        hanoiLabel, "HA NOI 首都",
+        hanoiCoord.rx * canvas.width, hanoiCoord.ry * canvas.height,
+        (w) => canvas.width - MARGIN_X - w,
+        (h) => hanoiCoord.ry * canvas.height - h / 2
+      );
+
+      const hcmCoord = PROVINCE_COORDINATES["HO CHI MINH"];
+      const hcmItem = computeSpecialLabelLayout(
+        hcmLabel, "HO CHI MINH 市",
+        hcmCoord.rx * canvas.width, hcmCoord.ry * canvas.height,
+        (w) => canvas.width - MARGIN_X - w,
+        (h) => hcmCoord.ry * canvas.height - h / 2
+      );
+
+      // Chống đè hoàn toàn: gộp TẤT CẢ ô (ứng viên + 2 nhãn đặc biệt) vào
+      // 1 danh sách duy nhất rồi chạy resolveOverlaps() trước khi vẽ,
+      // đảm bảo không còn cặp ô nào bị chồng lấn lên nhau trên bản đồ.
+      const allBoxItems = [...leftItems, ...rightItems, ...fixedItems, hanoiItem, hcmItem];
+      resolveOverlaps(allBoxItems);
+
+      allBoxItems.forEach(item => {
+        renderCalloutBox({
+          boxX: item.boxX, boxY: item.boxY, boxWidth: item.boxWidth, boxHeight: item.boxHeight,
+          text: item.text, color: item.color, strokeColor: item.strokeColor,
+          targetX: item.targetX, targetY: item.targetY
+        });
+        const box = { x: item.boxX, y: item.boxY, w: item.boxWidth, h: item.boxHeight };
+        const target = { x: item.targetX, y: item.targetY };
+        if (item.isSpecial) {
+          item.ref._box = box;
+          item.ref._target = target;
+        } else {
+          item.c._box = box;
+          item.c._target = target;
+        }
+      });
+    }
+
+    /* ======================================================
+       KÉO THẢ TỰ DO (DRAG & DROP) CHO MỌI Ô NHÃN TRÊN BẢN ĐỒ
+       - Kéo vào THÂN Ô: di chuyển cả ô (gốc mũi tên bám theo).
+         Cursor hiển thị grab/grabbing ngay khi rê/kéo trên ô.
+       - Kéo vào mép PHẢI của ô (vùng rộng RESIZE_HANDLE_WIDTH px,
+         hoàn toàn trong suốt - không vẽ gì, không có vạch trang
+         trí nào): chỉnh độ rộng ô, cursor chuyển thành ew-resize
+         (↔). Mép trái của ô giữ cố định, chỉ mép phải di chuyển
+         theo con trỏ chuột; chiều rộng không bao giờ nhỏ hơn độ
+         dài thực của văn bản nên không bị cắt chữ, và không bao
+         giờ vượt quá rìa phải của canvas (boundary clamp).
+       - Kéo vào ĐẦU MŨI TÊN (vòng tròn quanh điểm target): chỉnh
+         lại điểm đích mũi tên trỏ vào - toạ độ cũng được giới
+         hạn trong đúng khung nhìn canvas.
+       - Mọi toạ độ sau khi kéo được lưu trực tiếp vào dữ liệu
+         (c.boxOverride/targetOverride/boxWidthOverride, hanoiLabel,
+         hcmLabel, companyLabel) nên khi bấm [Cập nhật] / render lại
+         sẽ không bị nhảy về trạng thái mặc định ban đầu. drawCallouts()
+         luôn tự động boundary-clamp + chống đè (resolveOverlaps) lại
+         nên dù dữ liệu override có bị trùng toạ độ, ô vẫn không bao
+         giờ văng ra ngoài canvas hay che khuất ô khác.
+       ====================================================== */
+    function getCanvasPoint(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (evt.clientX - rect.left) * scaleX,
+        y: (evt.clientY - rect.top) * scaleY
+      };
+    }
+
+    function pointInBox(pt, box) {
+      return box && pt.x >= box.x && pt.x <= box.x + box.w && pt.y >= box.y && pt.y <= box.y + box.h;
+    }
+
+    function distance(pt, p2) {
+      return Math.hypot(pt.x - p2.x, pt.y - p2.y);
+    }
+
+    function allDraggableRefs() {
+      const refs = [{ ref: hanoiLabel, kind: "special" }, { ref: hcmLabel, kind: "special" }];
+      for (let i = candidates.length - 1; i >= 0; i--) {
+        refs.push({ ref: candidates[i], kind: "candidate" });
+      }
+      return refs;
+    }
+
+    function hitTestTarget(pt) {
+      for (const { ref } of allDraggableRefs()) {
+        if (ref._target && distance(pt, ref._target) <= DRAG_HANDLE_RADIUS) return ref;
+      }
+      return null;
+    }
+
+    // Vùng tay cầm kéo giãn chiều rộng: dải mỏng RESIZE_HANDLE_WIDTH px
+    // sát mép phải của ô - hoàn toàn vô hình, chỉ dùng để bắt sự kiện chuột.
+    function pointOnResizeHandle(pt, box) {
+      if (!box) return false;
+      return pt.x >= box.x + box.w - RESIZE_HANDLE_WIDTH && pt.x <= box.x + box.w &&
+        pt.y >= box.y && pt.y <= box.y + box.h;
+    }
+
+    function hitTestResizeHandle(pt) {
+      for (const { ref, kind } of allDraggableRefs()) {
+        if (pointOnResizeHandle(pt, ref._box)) return { ref, kind };
+      }
+      return null;
+    }
+
+    function hitTestBox(pt) {
+      for (const { ref, kind } of allDraggableRefs()) {
+        if (pointInBox(pt, ref._box)) return { ref, kind };
+      }
+      if (pointInBox(pt, companyLabel._box)) return { ref: companyLabel, kind: "company" };
+      return null;
+    }
+
+    let dragState = null;
+
+    canvas.addEventListener("mousedown", (e) => {
+      const pt = getCanvasPoint(e);
+
+      const targetRef = hitTestTarget(pt);
+      if (targetRef) {
+        dragState = { mode: "target", ref: targetRef };
+        canvas.style.cursor = "grabbing";
+        e.preventDefault();
+        return;
+      }
+
+      const resizeHit = hitTestResizeHandle(pt);
+      if (resizeHit) {
+        const box = resizeHit.ref._box;
+        dragState = {
+          mode: "resize",
+          ref: resizeHit.ref,
+          startX: pt.x,
+          startWidth: box.w,
+          boxX: box.x
+        };
+        canvas.style.cursor = "ew-resize";
+        e.preventDefault();
+        return;
+      }
+
+      const boxHit = hitTestBox(pt);
+      if (boxHit) {
+        const box = boxHit.ref._box;
+        dragState = {
+          mode: "box",
+          kind: boxHit.kind,
+          ref: boxHit.ref,
+          offsetX: pt.x - box.x,
+          offsetY: pt.y - box.y
+        };
+        canvas.style.cursor = "grabbing";
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      const pt = getCanvasPoint(e);
+
+      if (dragState) {
+        if (dragState.mode === "target") {
+          // Boundary clamp: đầu mũi tên không bao giờ được kéo ra ngoài khung canvas.
+          dragState.ref.targetX = clamp(pt.x, 0, canvas.width);
+          dragState.ref.targetY = clamp(pt.y, 0, canvas.height);
+          dragState.ref.targetOverride = true;
+        } else if (dragState.mode === "resize") {
+          const deltaX = pt.x - dragState.startX;
+          // Boundary clamp: mép phải khi kéo giãn không bao giờ vượt quá rìa canvas.
+          const maxWidth = canvas.width - MARGIN_X - dragState.boxX;
+          dragState.ref.boxWidthOverride = clamp(dragState.startWidth + deltaX, MIN_BOX_WIDTH, maxWidth);
+          dragState.ref.boxX = dragState.boxX;
+          dragState.ref.boxOverride = true;
+        } else if (dragState.kind === "company") {
+          dragState.ref.x = pt.x - dragState.offsetX;
+          dragState.ref.y = pt.y - dragState.offsetY;
+          dragState.ref.override = true;
+        } else {
+          dragState.ref.boxX = pt.x - dragState.offsetX;
+          dragState.ref.boxY = pt.y - dragState.offsetY;
+          dragState.ref.boxOverride = true;
+        }
+        drawCallouts();
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const insideCanvas = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!insideCanvas) {
+        canvas.style.cursor = "default";
+        return;
+      }
+      if (hitTestTarget(pt)) {
+        canvas.style.cursor = "grab";
+        return;
+      }
+      if (hitTestResizeHandle(pt)) {
+        canvas.style.cursor = "ew-resize";
+        return;
+      }
+      canvas.style.cursor = hitTestBox(pt) ? "grab" : "default";
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (dragState) {
+        dragState = null;
+        canvas.style.cursor = "grab";
+      }
+    });
+
+    document.getElementById("btnUpdate").addEventListener("click", drawCallouts);
+
+    // Đặt lại vị trí mặc định: xoá toàn bộ cache/override đã kéo tay
+    // (vị trí ô, vị trí mũi tên, độ rộng ô đã chỉnh) của mọi ứng viên
+    // và 2 nhãn đặc biệt (Hà Nội/TP.HCM), rồi tính lại layout mặc định
+    // từ đầu cho TOÀN BỘ danh sách hiện có. Đồng thời dọn sạch mọi dữ
+    // liệu từng được lưu ở localStorage (nếu có) để tránh trạng thái cũ.
+    document.getElementById("btnResetLayout").addEventListener("click", () => {
+      candidates.forEach(c => {
+        c.boxOverride = false;
+        c.targetOverride = false;
+        c.boxWidthOverride = null;
+        delete c.boxX;
+        delete c.boxY;
+        delete c.targetX;
+        delete c.targetY;
+      });
+
+      hanoiLabel.boxOverride = false;
+      hanoiLabel.targetOverride = false;
+      hanoiLabel.boxWidthOverride = null;
+
+      hcmLabel.boxOverride = false;
+      hcmLabel.targetOverride = false;
+      hcmLabel.boxWidthOverride = null;
+
+      companyLabel.override = false;
+      companyLabel.x = 0;
+      companyLabel.y = 0;
+
+      try { localStorage.clear(); } catch (e) { /* không có quyền truy cập localStorage - bỏ qua */ }
+
+      drawCallouts();
+    });
+
+    if (mapImage.complete) {
+      drawCallouts();
+    } else {
+      mapImage.addEventListener("load", drawCallouts);
+    }
+    window.addEventListener("resize", drawCallouts);
+
+    renderTable();
+  </script>
+
+</body>
+
+</html>
