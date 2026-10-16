@@ -1,0 +1,143 @@
+⚡ HƯỚNG DẪN CÀI ĐẶT NHANH - 5 PHÚT
+==========================================
+
+📋 CHUẨN BỊ
+-----------
+✓ Microsoft Excel 2013 trở lên
+✓ File bản đồ Việt Nam có đánh số 63 tỉnh
+
+🚀 CÀI ĐẶT (5 BƯỚC)
+--------------------
+
+BƯỚC 1: TẠO FILE EXCEL
+-----------------------
+1. Mở Excel → File → Save As
+2. Chọn "Excel Macro-Enabled Workbook (*.xlsm)"
+3. Đặt tên: BanDoUngVien.xlsm
+
+BƯỚC 2: TẠO SHEET "DanhSach"
+-----------------------------
+Tạo bảng với cấu trúc:
+
+| A (STT) | B (Họ và tên)        | C (Tỉnh/Thành) | D (Loại) |
+|---------|----------------------|----------------|----------|
+| 01      | NGUYEN DIN TRUNG     | HA NOI         | 首都     |
+| 02      | PHAM CHUNG HIEU      | HUNG YEN       | 省       |
+| 03      | LE PHUOC QUAN        | BINH DINH      | 省       |
+
+⚠️ LƯU Ý:
+- Tên sheet phải là: DanhSach (không dấu cách)
+- Cột C: Tên tỉnh KHÔNG DẤU, IN HOA
+- Cột D: 省 (tỉnh thường), 首都 (Hà Nội), 市 (TP.HCM)
+
+BƯỚC 3: TẠO SHEET "BanDo"
+--------------------------
+1. Tạo sheet tên: BanDo
+2. Chèn ảnh bản đồ Việt Nam (Insert → Picture)
+3. ⭐ QUAN TRỌNG: Đặt tên cho ảnh
+   - Click chọn ảnh
+   - Vào Name Box (góc trên trái)
+   - Gõ: BanDoVN
+   - Nhấn Enter
+
+BƯỚC 4: IMPORT MÃ VBA
+---------------------
+1. Nhấn Alt + F11 (mở VBA Editor)
+2. Menu: Insert → Module
+3. Mở file: MapGenerator.bas
+4. Copy TOÀN BỘ nội dung (Ctrl+A → Ctrl+C)
+5. Paste vào Module (Ctrl+V)
+6. Đóng VBA Editor (Alt+Q)
+
+BƯỚC 5: TẠO NÚT CHẠY
+---------------------
+1. Vào sheet "BanDo"
+2. Tab Developer → Insert → Button (Form Control)
+   (Nếu không có tab Developer: File → Options → 
+    Customize Ribbon → tick Developer)
+3. Vẽ nút ở vị trí bất kỳ
+4. Hộp thoại "Assign Macro" hiện ra:
+   → Chọn: GenerateVietnamMap
+   → OK
+5. Đặt tên nút: "TẠO BẢN ĐỒ"
+
+🎉 HOÀN TẤT!
+------------
+✓ Nhập danh sách vào sheet "DanhSach"
+✓ Bấm nút "TẠO BẢN ĐỒ" → Xong!
+
+🔥 TẠO DỮ LIỆU MẪU (TÙY CHỌN)
+-----------------------------
+Để test nhanh:
+1. Alt + F11 (VBA Editor)
+2. F5 (Run)
+3. Chọn: CreateSampleData
+4. Run → Có ngay 10 ứng viên mẫu!
+
+⚙️ CHO PHÉP CHẠY MACRO
+-----------------------
+Nếu Excel báo lỗi "Macro disabled":
+1. File → Options → Trust Center
+2. Trust Center Settings
+3. Macro Settings → Enable all macros
+4. OK → Khởi động lại Excel
+
+🐛 SỬA LỖI NHANH
+----------------
+
+❌ "Không tìm thấy sheet DanhSach"
+   → Kiểm tra tên sheet: "DanhSach" (không dấu cách)
+
+❌ "Không tìm thấy BanDoVN"
+   → Chọn ảnh → Name Box → gõ "BanDoVN" → Enter
+
+❌ "Không tìm thấy tỉnh: XXX"
+   → Tên tỉnh phải IN HOA, KHÔNG DẤU
+   → VD: "HA NOI" chứ không phải "Hà Nội"
+
+❌ Text Box bị chồng lên nhau
+   → Kéo ảnh bản đồ lớn hơn
+
+📱 KẾT QUẢ
+-----------
+Bản đồ sẽ có:
+✓ Text Box màu xanh lá (tỉnh thường)
+✓ Text Box màu đỏ (Hà Nội, TP.HCM)
+✓ Mũi tên đỏ chỉ vào vị trí trên bản đồ
+✓ Format: 05. TRIEU ANH MINH -> PHU THO 省
+
+📚 TÀI LIỆU CHI TIẾT
+--------------------
+→ HUONG_DAN_SU_DUNG.md (Tiếng Việt đầy đủ)
+→ README.md (English version)
+
+🎯 63 TỈNH THÀNH HỖ TRỢ
+-----------------------
+Hà Nội, Vĩnh Phúc, Bắc Ninh, Hải Dương, Hải Phòng,
+Hưng Yên, Hà Nam, Nam Định, Thái Bình, Ninh Bình,
+Hà Giang, Cao Bằng, Bắc Kạn, Lạng Sơn, Tuyên Quang,
+Thái Nguyên, Lào Cai, Yên Bái, Phú Thọ, Bắc Giang,
+Quảng Ninh, Điện Biên, Lai Châu, Sơn La, Hòa Bình,
+Thanh Hóa, Nghệ An, Hà Tĩnh, Quảng Bình, Quảng Trị,
+Thừa Thiên Huế, Đà Nẵng, Quảng Nam, Quảng Ngãi,
+Bình Định, Phú Yên, Khánh Hòa, Ninh Thuận, Bình Thuận,
+Kon Tum, Gia Lai, Đắk Lắk, Đắk Nông, Lâm Đồng,
+Bình Phước, Tây Ninh, Bình Dương, Đồng Nai,
+Bà Rịa-Vũng Tàu, TP. Hồ Chí Minh, Long An, Tiền Giang,
+Bến Tre, Trà Vinh, Vĩnh Long, Đồng Tháp, An Giang,
+Kiên Giang, Cần Thơ, Hậu Giang, Sóc Trăng, Bạc Liêu, Cà Mau
+
+✅ CHECKLIST CÀI ĐẶT
+--------------------
+□ File .xlsm đã lưu
+□ Sheet "DanhSach" đã tạo với cấu trúc đúng
+□ Sheet "BanDo" đã tạo với ảnh có tên "BanDoVN"
+□ Đã import mã VBA vào Module
+□ Đã tạo nút và gán macro GenerateVietnamMap
+□ Đã bật Enable Macro
+□ Test với dữ liệu mẫu → Thành công!
+
+==========================================
+Phiên bản: 1.0 | Ngày: 2026-10-16
+Thời gian cài đặt: ~5 phút
+==========================================
